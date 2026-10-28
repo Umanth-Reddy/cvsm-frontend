@@ -14,7 +14,6 @@ import { ErrorState } from '../components/ui/ErrorState'
 import { LoadingState } from '../components/ui/LoadingState'
 import { PageIntro } from '../components/ui/PageIntro'
 import { ScoreBar } from '../components/ui/ScoreBar'
-import { CalibrationLine } from '../components/ui/CalibrationLine'
 import { formatDuration } from '../lib/audio'
 import { useComparison } from '../store/useComparison'
 
@@ -27,7 +26,7 @@ function ClipCard({
 }: {
   label: string
   name: string
-  duration: number
+  duration: number | null
   file: File | null
   playerRef: RefObject<AudioPlayerHandle>
 }) {
@@ -37,17 +36,17 @@ function ClipCard({
       <p className="mt-3 truncate font-medium" title={name}>
         {name}
       </p>
-      <p className="text-sm text-muted">{formatDuration(duration)}</p>
+      {duration !== null && <p className="text-sm text-muted">{formatDuration(duration)}</p>}
       {file && <AudioPlayer ref={playerRef} src={file} label={label} />}
     </Card>
   )
 }
 
-function download(response: CompareResponse, names: Pair<string>) {
+function download(response: CompareResponse, names: Pair<string>, durations: Pair<number | null>) {
   const report = {
     files: {
-      a: { name: names.a, duration_s: response.duration_s.a },
-      b: { name: names.b, duration_s: response.duration_s.b },
+      a: { name: names.a, duration_s: durations.a },
+      b: { name: names.b, duration_s: durations.b },
     },
     results: response.results,
   }
@@ -60,7 +59,7 @@ function download(response: CompareResponse, names: Pair<string>) {
 }
 
 export default function Results() {
-  const { status, response, names, fileA, fileB, error, reset } = useComparison()
+  const { status, response, names, fileA, fileB, durations, error, reset } = useComparison()
   const navigate = useNavigate()
   const models = useModels()
   const playerA = useRef<AudioPlayerHandle>(null)
@@ -93,7 +92,6 @@ export default function Results() {
       />
     )
   } else {
-    const clipped = [response.clipped.a && 'Audio A', response.clipped.b && 'Audio B'].filter(Boolean)
     body = (
       <div className="space-y-6">
         {(!fileA || !fileB) && (
@@ -106,8 +104,8 @@ export default function Results() {
         )}
 
         <div className="grid gap-4 md:grid-cols-2">
-          <ClipCard label="Audio A" name={names.a} duration={response.duration_s.a} file={fileA} playerRef={playerA} />
-          <ClipCard label="Audio B" name={names.b} duration={response.duration_s.b} file={fileB} playerRef={playerB} />
+          <ClipCard label="Audio A" name={names.a} duration={durations.a} file={fileA} playerRef={playerA} />
+          <ClipCard label="Audio B" name={names.b} duration={durations.b} file={fileB} playerRef={playerB} />
         </div>
 
         <Card>
@@ -119,23 +117,17 @@ export default function Results() {
                 label={info(r.model)?.label ?? r.model}
                 description={info(r.model)?.description}
                 value={r.cosine}
-              >
-                {r.centred_cosine !== undefined && r.reference && (
-                  <CalibrationLine label={info(r.model)?.label ?? r.model} value={r.centred_cosine} reference={r.reference} />
-                )}
-              </ScoreBar>
+              />
             ))}
           </div>
           <p className="mt-8 text-sm text-muted">
             Scores from different models are not calibrated against each other. Each bar shows that model's own value,
             so they shouldn't be read as one model being "right".
           </p>
-          {clipped.length > 0 && (
-            <p className="mt-2 text-sm font-medium">Only the first 30 s of {clipped.join(' and ')} were analysed.</p>
-          )}
+          <p className="mt-2 text-sm text-muted">Each model analyses the middle four seconds of each clip. Scores range from −1 to 1 and are not percentages.</p>
         </Card>
 
-        <EmbeddingProfile fileA={fileA} fileB={fileB} />
+        <EmbeddingProfile vectors={response.embeddings} />
 
         <div className="flex flex-wrap gap-3 print:hidden">
           <Button
@@ -152,7 +144,7 @@ export default function Results() {
           <Button variant="secondary" disabled={!fileB} onClick={() => replay(playerB, playerA)}>
             Replay B
           </Button>
-          <Button variant="secondary" onClick={() => download(response, names)}>
+          <Button variant="secondary" onClick={() => download(response, names, durations)}>
             Download results (JSON)
           </Button>
           <Button variant="secondary" onClick={() => window.print()}>

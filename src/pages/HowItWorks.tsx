@@ -79,7 +79,7 @@ export default function HowItWorks() {
         <div className="mt-4 max-w-2xl space-y-3 text-muted">
           <p>
             In the paper's artist-similarity task, a clip's embedding is the L2-normalised average over its 1 s excerpts
-            that contain vocals. The demo has no vocal detector, so it averages every 1 s window of the first 30 s.
+            that contain vocals. This service has no vocal detector. It uses four 1 s windows from the middle of each clip.
           </p>
           <p>
             Scores from different models aren't calibrated against each other, and the demo never turns a score into a

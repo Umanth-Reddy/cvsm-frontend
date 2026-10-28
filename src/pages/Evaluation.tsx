@@ -19,8 +19,8 @@ const MARK: Record<string, { symbol: string; label: string }> = {
 // Which paper variant and vocal separator each demo checkpoint corresponds to, by checkpoint name.
 const DEMO_MODELS: Record<string, string> = {
   cvsm_art: 'CVSM-ART with HT-Demucs vocals. Its results are in Table III.',
-  mscol: 'MSCOL with HT-Demucs vocals. Its results are in Table III.',
   cvsm_a: 'CVSM-A with open-unmix vocals. Its results are in Table II.',
+  cvsm_ah: 'CVSM-AH with HT-Demucs vocals. Its results are in Table III.',
 }
 
 const TASKS = [

@@ -133,7 +133,7 @@ export default function Design() {
             }}
             onDuration={setDuration}
           />
-          <UploadCard label="With error" file={null} duration={null} error="File is over 15 MB" onFile={() => {}} onRemove={() => {}} onDuration={() => {}} />
+          <UploadCard label="With error" file={null} duration={null} error="File is too large" onFile={() => {}} onRemove={() => {}} onDuration={() => {}} />
         </div>
       </Section>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from './client'
+import { MODEL_INFO } from './types'
 import type { ModelInfo } from './types'
 
 let request: Promise<ModelInfo[]> | null = null
@@ -9,7 +10,7 @@ export function useModels(): ModelInfo[] {
   const [models, setModels] = useState<ModelInfo[]>([])
 
   useEffect(() => {
-    request ??= api.models().then((r) => r.models)
+    request ??= api.health().then((r) => r.models.map((id) => MODEL_INFO[id]).filter(Boolean))
     request.then(setModels).catch(() => {
       request = null // let the next page try again
     })

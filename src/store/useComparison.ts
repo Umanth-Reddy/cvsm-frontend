@@ -5,11 +5,12 @@ import type { CompareResponse, Pair } from '../api/types'
 type Slot = 'a' | 'b'
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
-const STORAGE_KEY = 'cvsm.comparison'
+const STORAGE_KEY = 'cvsm.comparison.v2'
 
 interface Saved {
   response: CompareResponse
   names: Pair<string>
+  durations: Pair<number | null>
 }
 
 // File objects live only in memory; scores, durations and filenames survive a refresh.
@@ -52,7 +53,7 @@ const saved = load()
 export const useComparison = create<ComparisonState>((set, get) => ({
   fileA: null,
   fileB: null,
-  durations: { a: null, b: null },
+  durations: saved?.durations ?? { a: null, b: null },
   status: saved ? 'success' : 'idle',
   response: saved?.response ?? null,
   names: saved?.names ?? null,
@@ -80,7 +81,7 @@ export const useComparison = create<ComparisonState>((set, get) => ({
     try {
       const response = await api.compare(fileA, fileB)
       const names = { a: fileA.name, b: fileB.name }
-      save({ response, names })
+      save({ response, names, durations: get().durations })
       set({ status: 'success', response, names })
       return true
     } catch (e) {

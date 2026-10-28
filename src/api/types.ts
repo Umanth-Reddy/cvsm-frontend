@@ -1,11 +1,6 @@
-// Mirrors the API contract in implementation.txt section 3 and cvsm-demo/app.py.
+export type ModelId = 'cvsm_art' | 'cvsm_a' | 'cvsm_ah'
 
-export type ModelId = 'cvsm_art' | 'mscol' | 'cvsm_a'
-
-export interface HealthResponse {
-  status: 'ok'
-  models_loaded: string[]
-}
+export const MODEL_IDS: ModelId[] = ['cvsm_art', 'cvsm_a', 'cvsm_ah']
 
 export interface ModelInfo {
   id: ModelId
@@ -13,16 +8,15 @@ export interface ModelInfo {
   description: string
 }
 
-export interface ModelsResponse {
-  models: ModelInfo[]
+export const MODEL_INFO: Record<ModelId, ModelInfo> = {
+  cvsm_art: { id: 'cvsm_art', label: 'CVSM-ART', description: 'Artist-informed training with HT-Demucs vocal stems.' },
+  cvsm_a: { id: 'cvsm_a', label: 'CVSM-A', description: 'Label-agnostic training with Open-Unmix vocal stems.' },
+  cvsm_ah: { id: 'cvsm_ah', label: 'CVSM-AH', description: 'Label-agnostic hybrid training with HT-Demucs vocal stems.' },
 }
 
-export interface EmbedResponse {
-  model: ModelId
-  dim: number
-  embedding: number[]
-  duration_s: number
-  clipped: boolean
+export interface HealthResponse {
+  status: 'ok'
+  models: ModelId[]
 }
 
 export interface Pair<T> {
@@ -32,41 +26,17 @@ export interface Pair<T> {
 
 export interface SimilarityResponse {
   model: ModelId
-  cosine: number
-  duration_s: Pair<number>
-  clipped: Pair<boolean>
-}
-
-/** Present when the server has a reference.json (scripts/eval_reference.py). */
-export interface CalibrationReference {
-  diff_artist_p10: number
-  diff_artist_median: number
-  same_artist_median: number
-  n_clips: number
-  n_artists: number
+  similarity: number
+  embedding1: number[]
+  embedding2: number[]
 }
 
 export interface ModelScore {
   model: ModelId
   cosine: number
-  centred_cosine?: number
-  reference?: CalibrationReference
 }
 
 export interface CompareResponse {
   results: ModelScore[]
-  duration_s: Pair<number>
-  clipped: Pair<boolean>
-}
-
-export interface GalleryClip {
-  id: string
-  label: string
-  x: number
-  y: number
-  audio_url: string
-}
-
-export interface GalleryResponse {
-  clips: GalleryClip[]
+  embeddings: Pair<number[]>
 }

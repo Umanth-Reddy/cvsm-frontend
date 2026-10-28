@@ -1,14 +1,6 @@
-// The only file that calls fetch.
 import { API_BASE } from './config'
-import type {
-  CompareResponse,
-  EmbedResponse,
-  GalleryResponse,
-  HealthResponse,
-  ModelId,
-  ModelsResponse,
-  SimilarityResponse,
-} from './types'
+import { MODEL_IDS } from './types'
+import type { CompareResponse, HealthResponse, ModelId, SimilarityResponse } from './types'
 
 /** status 0 means the request never got a response (backend down, offline). */
 export class ApiError extends Error {
@@ -22,10 +14,10 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(init?: RequestInit): Promise<T> {
   let res: Response
   try {
-    res = await fetch(`${API_BASE}${path}`, init)
+    res = await fetch(`${API_BASE}/cvsm`, init)
   } catch {
     throw new ApiError(0, 'Network error')
   }
@@ -33,7 +25,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     let detail = res.statusText
     try {
       const body = await res.json()
-      if (typeof body?.detail === 'string') detail = body.detail
+      if (typeof body?.error === 'string') detail = body.error
     } catch {
       /* non-JSON error body: keep the status text */
     }
@@ -43,41 +35,43 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>
 }
 
-function form(files: Record<string, File>): FormData {
+function similarity(fileA: File, fileB: File, model: ModelId) {
   const body = new FormData()
-  for (const [key, file] of Object.entries(files)) body.append(key, file)
-  return body
+  body.append('model', model)
+  body.append('audio1', fileA)
+  body.append('audio2', fileB)
+  return request<SimilarityResponse>({ method: 'POST', body })
 }
 
 export const api = {
-  health: () => request<HealthResponse>('/health'),
-  models: () => request<ModelsResponse>('/models'),
-  gallery: () => request<GalleryResponse>('/gallery'),
-  embed: (file: File, model: ModelId) =>
-    request<EmbedResponse>(`/embed?model=${model}`, { method: 'POST', body: form({ file }) }),
-  similarity: (fileA: File, fileB: File, model: ModelId) =>
-    request<SimilarityResponse>(`/similarity?model=${model}`, {
-      method: 'POST',
-      body: form({ file_a: fileA, file_b: fileB }),
-    }),
-  compare: (fileA: File, fileB: File) =>
-    request<CompareResponse>('/compare', {
-      method: 'POST',
-      body: form({ file_a: fileA, file_b: fileB }),
-    }),
+  health: () => request<HealthResponse>(),
+  compare: async (fileA: File, fileB: File): Promise<CompareResponse> => {
+    const responses = await Promise.all(MODEL_IDS.map((model) => similarity(fileA, fileB, model)))
+    for (const [index, result] of responses.entries()) {
+      if (result.model !== MODEL_IDS[index] || !Number.isFinite(result.similarity) ||
+          result.similarity < -1 || result.similarity > 1 ||
+          !Array.isArray(result.embedding1) || result.embedding1.length !== 1280 ||
+          !Array.isArray(result.embedding2) || result.embedding2.length !== 1280 ||
+          !result.embedding1.every(Number.isFinite) || !result.embedding2.every(Number.isFinite)) {
+        throw new ApiError(502, 'The CVSM service returned an invalid result.')
+      }
+    }
+    return {
+      results: responses.map(({ model, similarity }) => ({ model, cosine: similarity })),
+      embeddings: { a: responses[0].embedding1, b: responses[0].embedding2 },
+    }
+  },
 }
 
-/** User-facing wording for each failure the brief names. */
 export function describeError(error: unknown): string {
   if (!(error instanceof ApiError)) return 'Something went wrong'
   switch (error.status) {
     case 0:
-    case 502: // a proxy in front of a stopped or still-starting backend
     case 503:
     case 504:
       return "Can't reach the CVSM service"
     case 413:
-      return 'File is over 15 MB'
+      return 'The two files are too large for this service (4 MiB combined)'
     case 415:
       return 'Unsupported audio format'
     case 422:

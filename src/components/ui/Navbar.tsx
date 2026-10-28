@@ -6,7 +6,7 @@ export const NAV_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/compare', label: 'Compare' },
   { to: '/results', label: 'Results' },
-  { to: '/gallery', label: 'Gallery' },
+  { to: '/gallery', label: 'Demo audio' },
   { to: '/evaluation', label: 'Evaluation' },
   { to: '/how-it-works', label: 'How It Works' },
   { to: '/about', label: 'About' },

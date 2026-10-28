@@ -31,7 +31,7 @@ const STEPS = [
   {
     title: 'Input audio',
     badge: 'Live demo' as const,
-    body: 'You upload two clips. They are resampled to 16 kHz mono, and the first 30 s of each are analysed.',
+    body: 'You upload two clips. The service analyses the middle four seconds of each, resampled to 16 kHz mono.',
   },
   {
     title: 'Learn representations',

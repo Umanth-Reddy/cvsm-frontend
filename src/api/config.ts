@@ -1,2 +1,2 @@
-// Relative by default so the same build works behind the Vite proxy and when FastAPI serves it.
-export const API_BASE = import.meta.env.VITE_API_BASE ?? '/api'
+// Override at build time if the backend is deployed to another origin.
+export const API_BASE = (import.meta.env.VITE_API_BASE ?? 'https://cvsm-backend.vercel.app/api').replace(/\/$/, '')

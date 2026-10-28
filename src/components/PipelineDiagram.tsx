@@ -1,4 +1,4 @@
-// Training stages are research context; the inference lane mirrors cvsm-demo/embedder.py step by step.
+// Training stages are research context; the inference lane mirrors the hosted service.
 const TRAINING = [
   { title: 'Vocal excerpt', detail: ['a short clip of', 'singing voice'] },
   { title: 'Mixture', detail: ['music that contains', 'that vocal'] },
@@ -7,12 +7,11 @@ const TRAINING = [
 ]
 
 const INFERENCE = [
-  { title: 'Audio file', detail: ['first 30 s'] },
+  { title: 'Audio file', detail: ['middle 4 s'] },
   { title: '16 kHz mono', detail: ['resampled'] },
-  { title: '5 s chunks', detail: ['each L2-', 'normalised'] },
   { title: '1 s windows', detail: ['log-mel,', '64 bands'] },
   { title: 'Encoder', detail: ['EfficientNet-B0,', '1280-d'] },
-  { title: 'Mean', detail: ['over windows,', 'L2-normalised'] },
+  { title: 'Mean', detail: ['over 4 windows,', 'L2-normalised'] },
   { title: 'Cosine', detail: ['of two clip', 'embeddings'] },
 ]
 

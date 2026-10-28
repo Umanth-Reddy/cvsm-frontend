@@ -83,7 +83,7 @@ export function UploadCard({ label, file, duration, onFile, onRemove, onDuration
           className="mt-3 flex w-full flex-col items-center gap-1 rounded-card border border-dashed border-muted-soft px-4 py-10 text-center transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span className="font-medium">Drop audio here or choose a file</span>
-          <span className="text-sm text-muted">WAV, MP3, FLAC, OGG or M4A · up to 15 MB</span>
+          <span className="text-sm text-muted">WAV, MP3, FLAC, OGG or M4A · 4 MiB combined</span>
         </button>
       )}
 

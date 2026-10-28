@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { describeError } from '../api/client'
 import { Button } from '../components/ui/Button'
@@ -6,13 +6,17 @@ import { ErrorState } from '../components/ui/ErrorState'
 import { LoadingState } from '../components/ui/LoadingState'
 import { PageIntro } from '../components/ui/PageIntro'
 import { UploadCard } from '../components/ui/UploadCard'
+import { MAX_BYTES } from '../lib/audio'
 import { useComparison } from '../store/useComparison'
 
 export default function Compare() {
   const { fileA, fileB, durations, status, error, setFile, setDuration, run } = useComparison()
   const navigate = useNavigate()
   const mounted = useRef(true)
-  const loading = status === 'loading'
+  const [demoLoading, setDemoLoading] = useState(false)
+  const [demoError, setDemoError] = useState<string | null>(null)
+  const loading = status === 'loading' || demoLoading
+  const filesTooLarge = !!fileA && !!fileB && fileA.size + fileB.size > MAX_BYTES
 
   useEffect(() => {
     mounted.current = true
@@ -26,12 +30,34 @@ export default function Compare() {
     if ((await run()) && mounted.current) navigate('/results')
   }
 
+  const sendDemo = async () => {
+    setDemoError(null)
+    setDemoLoading(true)
+    try {
+      const paths = ['singin-in-the-rain-a.mp3', 'singin-in-the-rain-b.mp3']
+      const files = await Promise.all(paths.map(async (name) => {
+        const response = await fetch(`${import.meta.env.BASE_URL}demo/${name}`)
+        if (!response.ok) throw new Error('Demo audio could not be loaded')
+        return new File([await response.blob()], name, { type: 'audio/mpeg' })
+      }))
+      setFile('a', files[0])
+      setFile('b', files[1])
+      setDuration('a', 16)
+      setDuration('b', 16)
+      setDemoLoading(false)
+      if (mounted.current) await submit()
+    } catch (e) {
+      setDemoLoading(false)
+      if (mounted.current) setDemoError(e instanceof Error ? e.message : 'Demo audio could not be loaded')
+    }
+  }
+
   return (
     <>
       <PageIntro
         eyebrow="Compare"
         title="Compare two songs."
-        lead="Choose two audio clips. Each of the three models returns a cosine similarity score for the pair. Only the first 30 s of each clip are analysed."
+        lead="Choose two audio clips. Each of the three models returns a cosine similarity score for the pair, using the middle four seconds of each clip."
       />
 
       <div className="container-page">
@@ -57,9 +83,17 @@ export default function Compare() {
         </div>
 
         <div className="mt-6">
-          <Button onClick={submit} disabled={!fileA || !fileB} loading={loading}>
+          <Button onClick={submit} disabled={!fileA || !fileB || filesTooLarge || demoLoading} loading={status === 'loading'}>
             Compare
           </Button>
+          <Button variant="secondary" className="ml-3" onClick={sendDemo} disabled={loading} loading={demoLoading}>
+            Send demo audio
+          </Button>
+          <p className="mt-3 text-sm text-muted">
+            Demo: two excerpts of <a className="underline underline-offset-4" href="https://commons.wikimedia.org/wiki/File:Singin%27_in_the_Rain.mp3">“Singin’ in the Rain” performed by Cary Bass-Deschenes</a>. Cropped and converted to mono from the <a className="underline underline-offset-4" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> recording.
+          </p>
+          {filesTooLarge && <p role="alert" className="mt-3 text-sm font-medium">These files exceed the 4 MiB combined upload limit.</p>}
+          {demoError && <p role="alert" className="mt-3 text-sm font-medium">{demoError}</p>}
         </div>
 
         <div className="mt-6" aria-live="polite">

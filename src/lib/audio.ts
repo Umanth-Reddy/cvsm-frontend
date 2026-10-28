@@ -1,12 +1,12 @@
-// Client-side checks mirror the backend limits (cvsm-demo/app.py); the server stays authoritative.
+// Vercel caps the whole request at 4 MiB. Reserve room for multipart headers.
 export const ALLOWED_EXTENSIONS = ['.wav', '.mp3', '.flac', '.ogg', '.m4a']
 export const ACCEPT = ALLOWED_EXTENSIONS.join(',')
-export const MAX_BYTES = 15 * 1024 * 1024
+export const MAX_BYTES = 4 * 1024 * 1024 - 1024
 
 export function validateAudioFile(file: File): string | null {
   const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase()
   if (!ALLOWED_EXTENSIONS.includes(ext)) return 'Unsupported audio format'
-  if (file.size > MAX_BYTES) return 'File is over 15 MB'
+  if (file.size > MAX_BYTES) return 'File is too large (4 MiB combined limit)'
   return null
 }
 

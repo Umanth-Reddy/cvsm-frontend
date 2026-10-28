@@ -61,7 +61,7 @@ export default function About() {
             <h3 className="text-xl">What it does</h3>
             <ul className="mt-3 list-disc space-y-1 pl-5 text-muted">
               <li>Compares two clips you upload.</li>
-              <li>Analyses the first 30 s of each.</li>
+              <li>Analyses the middle four seconds of each.</li>
               <li>Returns a cosine similarity from each of three models.</li>
             </ul>
           </Card>
