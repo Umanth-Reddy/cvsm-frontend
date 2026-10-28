@@ -82,14 +82,21 @@ export default function Compare() {
           />
         </div>
 
-        <div className="mt-6">
-          <Button onClick={submit} disabled={!fileA || !fileB || filesTooLarge || demoLoading} loading={status === 'loading'}>
-            Compare
-          </Button>
-          <Button variant="secondary" className="ml-3" onClick={sendDemo} disabled={loading} loading={demoLoading}>
-            Send demo audio
-          </Button>
-          <p className="mt-3 text-sm text-muted">
+        <div className="mt-8 border-t border-line pt-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <p className="font-mono text-xs text-muted">
+              {fileA && fileB ? 'Ready to compare.' : 'Select two clips to enable similarity analysis.'}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="secondary" onClick={sendDemo} disabled={loading} loading={demoLoading}>
+                Send demo audio
+              </Button>
+              <Button onClick={submit} disabled={!fileA || !fileB || filesTooLarge || demoLoading} loading={status === 'loading'}>
+                Compare <span className="text-accent" aria-hidden="true">→</span>
+              </Button>
+            </div>
+          </div>
+          <p className="mt-4 text-sm text-muted">
             Demo: two excerpts of <a className="underline underline-offset-4" href="https://commons.wikimedia.org/wiki/File:Singin%27_in_the_Rain.mp3">“Singin’ in the Rain” performed by Cary Bass-Deschenes</a>. Cropped and converted to mono from the <a className="underline underline-offset-4" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> recording.
           </p>
           {filesTooLarge && <p role="alert" className="mt-3 text-sm font-medium">These files exceed the 4 MiB combined upload limit.</p>}

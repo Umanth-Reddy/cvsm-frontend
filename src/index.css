@@ -7,11 +7,14 @@
     --bg: #f7f5f0;
     --text: #171717;
     --surface: #e9e3d9;
+    --card: #ffffff;
     /* Brief value #77736D is 4.3:1 on the page background, below AA for body text.
        --muted is the text colour; --muted-soft keeps the brief value for non-text marks. */
     --muted: #5f5b54;
     --muted-soft: #77736d;
     --accent: #f16b50;
+    /* Coral darkened enough to read as small text on the page background. */
+    --accent-ink: #b8442b;
     --accent-2: #f2efa0;
     --border: #d9d2c5;
   }
@@ -22,9 +25,18 @@
     line-height: 1.6;
   }
 
-  h1, h2, h3 {
-    @apply font-medium;
+  h1, h2 {
+    @apply font-extrabold tracking-tight;
   }
+
+  h3 {
+    @apply font-semibold tracking-tight;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #d5cfc5; border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted-soft); }
 
   :focus-visible {
     outline: 2px solid var(--text);
@@ -39,7 +51,17 @@
 
   /* Small uppercase label for technical metadata. */
   .eyebrow {
-    @apply text-xs font-medium uppercase tracking-[0.14em] text-muted;
+    @apply font-mono text-xs font-medium uppercase tracking-[0.14em] text-muted;
+  }
+
+  /* Small rounded label, e.g. "IEEE TASLP '26". */
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1 font-mono text-xs;
+  }
+
+  /* Rounded tile that holds an icon. */
+  .icon-tile {
+    @apply flex h-10 w-10 items-center justify-center rounded-xl bg-surface text-ink;
   }
 }
 

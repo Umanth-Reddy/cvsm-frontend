@@ -3,6 +3,7 @@ import { ACCEPT, formatBytes, formatDuration, validateAudioFile } from '../../li
 import { AudioPlayer } from './AudioPlayer'
 import { Button } from './Button'
 import { Card } from './Card'
+import { UploadIcon } from './Icons'
 
 interface Props {
   label: string
@@ -47,7 +48,11 @@ export function UploadCard({ label, file, duration, onFile, onRemove, onDuration
       }}
     >
       <div className="flex items-center justify-between">
-        <span className="eyebrow">{label}</span>
+        <span className="eyebrow flex items-center gap-2 text-ink">
+          <span className={`h-2 w-2 rounded-full ${label.endsWith('A') ? 'bg-accent' : 'bg-ink'}`} aria-hidden="true" />
+          {label}
+        </span>
+        {!file && <span className="font-mono text-xs text-muted">Awaiting file</span>}
         {file && (
           <Button
             variant="ghost"
@@ -80,10 +85,15 @@ export function UploadCard({ label, file, duration, onFile, onRemove, onDuration
           type="button"
           disabled={disabled}
           onClick={() => input.current?.click()}
-          className="mt-3 flex w-full flex-col items-center gap-1 rounded-card border border-dashed border-muted-soft px-4 py-10 text-center transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-3 flex w-full flex-col items-center gap-1 rounded-card border-2 border-dashed border-line px-4 py-12 text-center transition-colors hover:bg-bg disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <span className="font-medium">Drop audio here or choose a file</span>
-          <span className="text-sm text-muted">WAV, MP3, FLAC, OGG or M4A · 4 MiB combined</span>
+          <span className="icon-tile mb-3">
+            <UploadIcon />
+          </span>
+          <span className="font-semibold">Drop audio here or choose a file</span>
+          <span className="mt-1 rounded-full bg-surface px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-muted">
+            WAV, MP3, FLAC, OGG or M4A · 4 MiB combined
+          </span>
         </button>
       )}
 

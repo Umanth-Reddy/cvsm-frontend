@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from 'react'
 import { cx } from '../../lib/cx'
 
-const tones = { outline: 'bg-bg', surface: 'bg-surface', highlight: 'bg-accent-2' }
+const tones = { outline: 'bg-card', surface: 'bg-surface', highlight: 'bg-accent-2' }
 
 type Props = { tone?: keyof typeof tones } & HTMLAttributes<HTMLDivElement>
 

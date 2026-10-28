@@ -19,7 +19,7 @@ export function ScoreBar({ label, description, value, className, children }: Pro
     <div className={className}>
       <div className="flex items-baseline justify-between gap-4">
         <span className="font-medium">{label}</span>
-        <span className="text-2xl font-medium tabular-nums">{text}</span>
+        <span className="font-mono text-2xl font-medium tabular-nums">{text}</span>
       </div>
       {description && <p className="text-sm text-muted">{description}</p>}
 
