@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: #f7f5f0;
+    --text: #171717;
+    --surface: #e9e3d9;
+    /* Brief value #77736D is 4.3:1 on the page background, below AA for body text.
+       --muted is the text colour; --muted-soft keeps the brief value for non-text marks. */
+    --muted: #5f5b54;
+    --muted-soft: #77736d;
+    --accent: #f16b50;
+    --accent-2: #f2efa0;
+    --border: #d9d2c5;
+  }
+
+  body {
+    @apply bg-bg font-sans text-ink antialiased;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3 {
+    @apply font-medium;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  /* Small uppercase label for technical metadata. */
+  .eyebrow {
+    @apply text-xs font-medium uppercase tracking-[0.14em] text-muted;
+  }
+}
+
+@media print {
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

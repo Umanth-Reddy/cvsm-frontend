@@ -1,0 +1,15 @@
+{
+  "source": "Table I, p. 2729",
+  "columns": ["Vocals", "Artist ID", "Artificial mixtures", "Fine-tuning"],
+  "rows": [
+    { "method": "COLA", "cells": ["no", "no", "na", "na"] },
+    { "method": "MSCOL", "cells": ["yes", "no", "no", "na"] },
+    { "method": "MERT", "cells": ["no", "no", "na", "na"] },
+    { "method": "MULE", "cells": ["no", "no", "na", "na"] },
+    { "method": "COLA-ART", "cells": ["no", "yes", "na", "na"] },
+    { "method": "CVSM-A", "cells": ["yes", "no", "yes", "no"] },
+    { "method": "CVSM-AH", "cells": ["yes", "no", "yes", "no"] },
+    { "method": "CVSM-AF", "cells": ["yes", "no", "yes", "yes"] },
+    { "method": "CVSM-ART", "cells": ["yes", "yes", "no", "na"] }
+  ]
+}
