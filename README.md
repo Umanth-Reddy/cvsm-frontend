@@ -6,7 +6,7 @@ Vite/React frontend for the three [CVSM models](https://cvsm-backend.vercel.app/
 
 ## Pages
 
-Home, Compare, Results, Demo audio, Evaluation, How It Works and About. Evaluation figures are copied from the paper (`src/data`); the demo reports no accuracy figures of its own.
+Home, Compare, Results, Improvements, Evaluation, How It Works and About. Evaluation covers the original CVSM publication. Improvements explains the separate Singer or Studio? research draft and includes its numerical tables and verification files.
 
 ## Stack
 
@@ -26,6 +26,10 @@ Import this folder as a Vercel project with the Vite preset. The included `verce
 
 Vercel limits the backend request body to 4 MiB. The frontend checks the two files together and reserves 1 KiB for multipart fields. The backend analyses the middle four seconds of each clip. Scores range from -1 to 1; they are not probabilities or percentages.
 
-## Demo audio credit
+## Compare sample audio credit
 
 The two clips in `public/demo/` were cropped from [“Singin’ in the Rain,” performed by Cary Bass-Deschenes](https://commons.wikimedia.org/wiki/File:Singin%27_in_the_Rain.mp3), then converted to mono MP3. The source recording is licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The demo compares two different passages from that recording.
+
+## Improvements content
+
+The interactive echo comparison uses archived JVS-MuSiC CVSM-ART results. It displays saved measurements and does not call the comparison API. The 20 tables in src/data/improvements.json were extracted from the journal draft and its supplement. The static paper, chart, score archive, and verification kit are in public/research/.
